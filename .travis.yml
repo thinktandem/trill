@@ -43,6 +43,9 @@ script:
   - grunt pkg
 
   # Name the release depending on whether it is an official release or not
+  - ls -lsa dist
+  - mkdir -p release
+  - echo "dist/trill-$TRAVIS_TAG"
   - if [ ! -z "$TRAVIS_TAG" ]; then cp -rf dist/trill-$TRAVIS_TAG release/trill-$TRAVIS_TAG; fi
 
 notifications:
