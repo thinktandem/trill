@@ -1,4 +1,5 @@
 plugins:
   - trill-core
+  - trill-process
 logLevelConsole: warn
 logLevel: debug

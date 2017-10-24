@@ -12,6 +12,7 @@
 *.tar
 *.jxp
 *.sublime-*
+*.csv
 
 # Logs
 *.log
