@@ -7,7 +7,7 @@
 module.exports = function(common) {
 
   // Define cli pkg name
-  var cliPkgName = 'lando-' + common.lando.pkgSuffix;
+  var cliPkgName = 'trill-' + common.trill.pkgSuffix;
 
   return {
 

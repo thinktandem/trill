@@ -63,7 +63,7 @@ module.exports = function(common) {
     }
 
     // Exec options
-    var pkgName = 'trill-' + common.lando.pkgSuffix;
+    var pkgName = 'trill-' + common.trill.pkgSuffix;
     var configFile = path.join('package.json');
     var entrypoint = path.join('bin', 'trill.js');
     var target = [node, os, arch].join('-');

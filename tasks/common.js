@@ -49,7 +49,7 @@ var buildFiles = [
 // Return our objects
 module.exports = {
   system: system,
-  lando: {
+  trill: {
     version: version,
     pkgType: pkgType,
     pkgExt: pkgExt,

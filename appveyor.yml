@@ -2,7 +2,7 @@ init:
   - git config --global core.autocrlf true
 platform: x64
 environment:
-  nodejs_version: "6"
+  nodejs_version: "8"
 install:
 
   # Get the latest stable version of Node.js or io.js
@@ -31,7 +31,7 @@ install:
   - node --version
   - npm --version
   - grunt --version
-  - node bin\lando.js version
+  - node bin\trill.js version
   # Iscc has no version option and returns exit code 1 by default
   # This can never fail but at least we can check the output to verify
   - iscc | echo
@@ -39,18 +39,12 @@ install:
   # Run basic code style tests
   - grunt test:code
 
-  # Run unit tests
-  - grunt test:unit
-
-  # Make sure we can build the docs
-  - grunt docs
-
 build_script:
 
   # Build dev releases
   - grunt pkg
   - mkdir release
-  - copy "dist\lando.exe" "release\lando-%APPVEYOR_REPO_TAG_NAME%.exe"
+  - copy "dist\trill.exe" "release\trill-%APPVEYOR_REPO_TAG_NAME%.exe"
 
 artifacts:
   - path: release\*.exe
@@ -60,7 +54,7 @@ after_build:
   - ps: Get-ChildItem .\release\*.exe | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName weezer }
 deploy:
   - provider: GitHub
-    description: v$(LANDO_VERSION)
+    description: v$(TRILL_VERSION)
     artifact: weezer
     draft: false
     auth_token:

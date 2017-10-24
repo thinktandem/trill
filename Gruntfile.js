@@ -67,7 +67,7 @@ module.exports = function(grunt) {
   ]);
 
   // Pkg the CLI binary
-  grunt.registerTask('pkg:cli', [
+  grunt.registerTask('pkg', [
     'clean:cliBuild',
     'clean:cliDist',
     'copy:cliBuild',

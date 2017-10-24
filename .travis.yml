@@ -2,14 +2,14 @@ language: node_js
 matrix:
   include:
   - os: linux
-    env: LANDO_PKG_TYPE=rpm LANDO_SUDO_PASSWORD=
-    node_js: '6'
+    env: TRILL_PKG_TYPE=rpm TRILL_SUDO_PASSWORD=
+    node_js: '8'
   - os: linux
-    env: LANDO_PKG_TYPE=deb LANDO_SUDO_PASSWORD=
-    node_js: '6'
+    env: TRILL_PKG_TYPE=deb TRILL_SUDO_PASSWORD=
+    node_js: '8'
   - os: osx
-    env: LANDO_PKG_TYPE=dmg LANDO_SUDO_PASSWORD=
-    node_js: '6'
+    env: TRILL_PKG_TYPE=dmg TRILL_SUDO_PASSWORD=
+    node_js: '8'
 services:
   - docker
 sudo: required
@@ -36,56 +36,33 @@ before_script:
   - node --version
   - npm --version
   - grunt --version
-  - node bin/lando.js version
+  - node bin/trill.js version
 
 script:
 
   # Run code and styling
   - grunt test:code
 
-  # Run unit tests
-  - grunt test:unit
-
-  # Make sure we can build the docs
-  - grunt docs
-
   # Run the build
   - mkdir -p release
   - grunt pkg
 
-  # Run a few tests on the installer
-  # - if [ $LANDO_PKG_TYPE == "deb" ]; then grunt test:bats; fi
-  # @TODO: Looks like installing Docker.app is still a problem which prevents us
-  # from testing
-  # - if [ $LANDO_PKG_TYPE == "dmg" ]; then grunt test:bats; fi
-
   # Name the release depending on whether it is an official release or not
-  - if [ -z "$TRAVIS_TAG" ]; then cp -rf dist/lando.$LANDO_PKG_TYPE release/lando-latest-dev.$LANDO_PKG_TYPE; fi
-  - if [ ! -z "$TRAVIS_TAG" ]; then cp -rf dist/lando.$LANDO_PKG_TYPE release/lando-$TRAVIS_TAG.$LANDO_PKG_TYPE; fi
+  - if [ -z "$TRAVIS_TAG" ]; then cp -rf dist/trill.$TRILL_PKG_TYPE release/trill-latest-dev.$TRILL_PKG_TYPE; fi
+  - if [ ! -z "$TRAVIS_TAG" ]; then cp -rf dist/trill.$TRILL_PKG_TYPE release/trill-$TRAVIS_TAG.$TRILL_PKG_TYPE; fi
 
 notifications:
   email:
     recipients:
       - mike@thinktandem.io
+      - john@thinktandem.io
     on_failure: always
 deploy:
-  - provider: releases
-    api_key:
-      secure: UXDea6KLTOOiUaUfhYqE7stUY74VE2gOdi3No5NscD0Lg3xB/EMf1wzpVe2nuTpjn1CbDBsGXXHqRRpy2IZj6qp21D39+Wygznv9PpSGPgTAB2ZHRYhpux1Qf/HxD8R/NhvISNMXukNLyd66OyiJlz5RWoLWQvLIiJgT1Uczc3Sj8iOJOmYaxQZku/3/q/LmjKKHVJ9vq7ail4l4SoNmLqh6sdDt9utJtavWHMa0hN5kF+CwoV5Vk/z2RFzYNInGwlJggwV7Y/Kf3TmOQv0CiKgxdEQqR8LfTDGIvkxFwpPSf7JnQYnsZWcOWW08oousN7tjc1L1ow2dzPnT2zRYNyx73FwkjWtZ7SLQCkU95pq6FgSy31+w6iWU6Rvwd9mgdX4sfxgdwxLwiF38Rki5TxXtMRGWW1qYRYvnCcc7gpPUPFv0PzsQYZiFSGxMF3uKdKxmKzYd+tfCMvE5YhfkDtCM+LeJBlSL5hZspMUezXEFtiKSv7fDmBKtGGFUsEruNqMphKEbH1kY1UT9SXUu+uxWN40ciJTXfQXJAGMSh34WkZFAgEP/r61+SZDlpuyYPQ8l8fOOcX2uaJYD0LJBSERVmVAX00SNxWSVdTTGibadRXWWuJ4gd4PGCXUhSJI9r1QLfMLyZtt5P3i9SUL2X4cO9isKysBjOq/5DZXjqq0=
-    file: release/lando-$TRAVIS_TAG.$LANDO_PKG_TYPE
-    skip_cleanup: true
-    on:
-      repo: lando/lando
-      tags: true
-  - provider: s3
-    access_key_id: AKIAJXCGUYNMSXQPAKYQ
-    secret_access_key:
-      secure: HstC04mBeuucF2PseyrNLXGZlt5WQ23iwWRrkh4rWTuqq2F4tKkTc+pCB6+Kx64ZE3OGx5T2KdyPOPhLYJOPmYhtTtE0RFI4oF2kEUxvLjTRLrXqDNHKL47PZ5Vel4Z/MTTfWka0M7wCxslBsbomPhO3ljUxlcqChqsh+VT+3JEFYJw4JmEbWHGQ/GnIdTkAksvMfiOFbZHGK+14NjKic9BOwqeBiItSLcydAzURKZOUmcp+u5dNGhHuM+fb98zenhxFIMp75ErwiENv5ER1ja42C+Hyveu3wWc/QIlZHarMULRlH+Zq3yDUCOeOoFjIgeb+H7MGVots8igGIZ4h17/eU8lAO6uRYLLKup/T87CH82VjMDYEDbwsr3XM6f20q/5Fk2dr1XLo+xwhFadIlpJgsbPpmGHu+QuuYczlqdGzw3Qn1IAzU9L7aitjmNQ1ReSGySjlD8sN0nNT7OJYW/4cdy9+RcoYpH4+dbNzjq9DXubJe1EeYQagd/7ebnHvazg5/5Av2whn/F5YjObwno+JrEDzgD2H0pOWfEVBjGT1uOaDIO7Itn1KTJl+gV9Uv+QJ0G/1wP3fnL3KOzMqqFATubtgBUqe12VQ39jUALmgfBKEdXMF2tojwtHkP4b+vQUszpkGxpNih4JmyJYEgc0CZTSNxQP0m+j+3HH/jDc=
-    bucket: installer.kalabox.io
-    local-dir: release
-    acl: public_read
-    region: us-west-2
-    skip_cleanup: true
-    on:
-      repo: lando/lando
-      branch: master
+  provider: releases
+  api_key:
+    secure: fsuASnROJwugUg7cFhJZoq/jMKjowxcra8vHVITujaNZIpRb5LJAMBg69DgYVJ4m+3px5afeSH1e2NOc85H7ixjM4CvHh9K68H2d9BR8U6YVbT9j7NGpiYL6MpC1yccQaFH7uxlrzwKoAvlx8Tc4KVAnv1NpyWlO6Cmfm42BF8HMJNgxXNsO9hk4fNHHktaQzV1V9vvdtNlyvAjx/qhBrDFP4rgwpobCX0Vf+Q0Y0ZOJm6XJ7XLt6GKce//DaNwpxdwMOH20YuVgD1Uoy24BRoJaqiZIQkZntVcCd/rzZ9jqkgOuosr4fvwK4XnCGCe88LUr40I4p0j6OvP2xzNJAKa7koVMNDBf6+2Z6NNTlqpymcDCBQ7jpdNrYr0oQb/cm7WQxqvBWeAtLGjCIsGGe2ZWb9/R/t+7+C/2UgkkAp7PTPCKOop483kjqbjU/JeIKsWepC80YVOZ9ToXbTM0kBffx2BjsnvaV8pU2bB7SlnSjiFypYtL2BX8PLE8JDDO95kFoaIBf5KPI1Y3GSxx7pF5nXRk1atN9u7S1LolXRyBDTnDLXeQRbCJRZ2ApAhoUnbseNeQetw6FPUzRgtUuYN5XGAphFHDag/r5KGDdjK45O6yYkP08fKfgw24z1CF82Zyh9fixfTnoNYkosu/yheWr2yoTif8Tnr5Z2MhEu4=
+  file: release/trill-$TRAVIS_TAG.$TRILL_PKG_TYPE
+  skip_cleanup: true
+  on:
+    repo: thinktandem/trill
+    tags: true
