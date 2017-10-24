@@ -16,11 +16,11 @@ module.exports = function(common) {
       cli: {
         build: {
           src: common.files.build,
-          dest: 'build/cli/'
+          dest: 'build/'
         },
         dist: {
-          src: 'build/cli/' + cliPkgName,
-          dest: 'dist/cli/' + cliPkgName,
+          src: 'build/' + cliPkgName,
+          dest: 'dist/' + cliPkgName,
           options: {
             mode: true
           }
@@ -31,8 +31,8 @@ module.exports = function(common) {
     // Our clean tasks
     clean: {
       cli: {
-        build: ['build/cli'],
-        dist: ['dist/cli']
+        build: ['build'],
+        dist: ['dist']
       }
     }
 

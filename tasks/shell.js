@@ -70,7 +70,7 @@ module.exports = function(common) {
     var shellOpts = {
       execOptions: {
         maxBuffer: 20 * 1024 * 1024,
-        cwd: 'build/cli'
+        cwd: 'build'
       }
     };
 

@@ -1,1 +1,18 @@
 name: trill
+services:
+  cli:
+    type: node:8
+    globals:
+      grunt-cli: "latest"
+tooling:
+  npm:
+    service: cli
+  node:
+    service: cli
+  yarn:
+    service: cli
+  grunt:
+    service: appserver
+  trill:
+    cmd: node /app/bin/trill.js
+    service: cli

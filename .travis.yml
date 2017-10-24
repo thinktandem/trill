@@ -2,13 +2,8 @@ language: node_js
 matrix:
   include:
   - os: linux
-    env: TRILL_PKG_TYPE=rpm TRILL_SUDO_PASSWORD=
-    node_js: '8'
-  - os: linux
-    env: TRILL_PKG_TYPE=deb TRILL_SUDO_PASSWORD=
     node_js: '8'
   - os: osx
-    env: TRILL_PKG_TYPE=dmg TRILL_SUDO_PASSWORD=
     node_js: '8'
 services:
   - docker
@@ -48,8 +43,7 @@ script:
   - grunt pkg
 
   # Name the release depending on whether it is an official release or not
-  - if [ -z "$TRAVIS_TAG" ]; then cp -rf dist/trill.$TRILL_PKG_TYPE release/trill-latest-dev.$TRILL_PKG_TYPE; fi
-  - if [ ! -z "$TRAVIS_TAG" ]; then cp -rf dist/trill.$TRILL_PKG_TYPE release/trill-$TRAVIS_TAG.$TRILL_PKG_TYPE; fi
+  - if [ ! -z "$TRAVIS_TAG" ]; then cp -rf dist/trill-$TRAVIS_TAG release/trill-$TRAVIS_TAG; fi
 
 notifications:
   email:

@@ -15,7 +15,7 @@ var system = {
 
 // Lando info
 var version = pkg.version;
-var pkgType = [system.platform, 'x64', 'v' + version].join('-');
+var pkgType = ['v' + version].join('-');
 var pkgExt = (system.platform === 'win32') ? '.exe' : '';
 var pkgSuffix = pkgType + pkgExt;
 
