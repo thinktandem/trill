@@ -1,0 +1,77 @@
+{
+  "name": "trill",
+  "description": "Trillin' out all the dizzles!",
+  "license": "GPLv3",
+  "version": "1.0.0-beta.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thinktandem/trill"
+  },
+  "bugs": {
+    "email": "john@thinktandem.io",
+    "url": "https://github.com/thinktandem/trill/issues"
+  },
+  "main": "lib/trill.js",
+  "bin": {
+    "trill": "./bin/trill.js"
+  },
+  "directories": {
+    "lib": "./lib"
+  },
+  "pkg": {
+    "scripts": [
+      "bin/*.js",
+      "lib/**/*.js",
+      "plugins/**/*.js"
+    ],
+    "assets": [
+      "package.json",
+      "**/*.cnf",
+      "**/*.conf",
+      "**/*.ini",
+      "**/*.php",
+      "**/*.yml",
+      "**/*.sh",
+      "**/*.vcl",
+      "**/*.json",
+      "**/*.toml"
+    ]
+  },
+  "dependencies": {
+    "bluebird": "^3.4.1",
+    "cli-table": "^0.3.1",
+    "dotenv": "^4.0.0",
+    "fs-extra": "^0.18.2",
+    "inquirer": "^3.1.1",
+    "ip": "^1.1.5",
+    "js-yaml": "^3.4.6",
+    "jsonfile": "^2.4.0",
+    "lodash": "^4.15.0",
+    "node-cache": "^4.1.1",
+    "object-hash": "^1.1.8",
+    "restler": "^3.4.0",
+    "shell-escape": "https://github.com/thinktandem/node-shell-escape/tarball/master",
+    "shelljs": "^0.6.0",
+    "sync-exec": "^0.6.2",
+    "uuid": "^2.0.1",
+    "winston": "^2.2.0",
+    "yargonaut": "^1.1.2",
+    "yargs": "^6.6.0",
+    "yargs-parser": "^4.2.1"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "grunt": "^0.4.5",
+    "grunt-bump": "0.7.0",
+    "grunt-contrib-clean": "^1.0.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-jshint": "~1.1.0",
+    "grunt-jscs": "~0.8.1",
+    "grunt-jsdoc-to-markdown": "^3.0.0",
+    "grunt-mocha-cli": "^3.0.0",
+    "grunt-shell": "^1.1.1",
+    "jshint-stylish": "~1.0.0",
+    "matchdep": "^0.3.0",
+    "pkg": "^4.1.0"
+  }
+}

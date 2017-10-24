@@ -1,0 +1,4 @@
+plugins:
+  - trill-core
+logLevelConsole: warn
+logLevel: debug
