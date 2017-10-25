@@ -13,6 +13,11 @@ module.exports = function(trill) {
   var fs = trill.node.fs;
   var path = require('path');
 
+  // @todo: we might want to have a set of default options to merge into
+  var options = {};
+
+  // Let's go through our plugins
+
   // Define our task
   return {
     command: 'process <file>',
@@ -28,7 +33,7 @@ module.exports = function(trill) {
 
       // Verify we can process the file
       var fileExtension = _.trim(path.extname(filename), '.');
-      if (!_.includes(_.keys(trill.process.file), fileExtension)) {
+      if (!_.includes(trill.process.filePlugins, fileExtension)) {
         trill.log.error('Cannot process files of type %s', fileExtension);
         process.exit(666);
       }
@@ -36,8 +41,11 @@ module.exports = function(trill) {
       // Log
       trill.log.info('About to process %s', filename);
 
+      // Load the needed file extention handler
+      var handler = require('./file/' + fileExtension + '.js')(trill);
+
       // Kick of the promise chain by delegating to the correct plugin
-      return trill.process.file[fileExtension].importer(filename)
+      return handler.importer(filename)
 
       // Process each lead
       .map(function(lead) {
@@ -65,7 +73,9 @@ module.exports = function(trill) {
         var exName = exThing + '.processed.' + fileExtension;
         var exFile = path.join(process.cwd(), exName);
         trill.log.info('About to transform the result to %s', fileExtension);
-        return trill.process.file[fileExtension].exporter(leads)
+
+        // Try the exporter
+        return handler.exporter(leads)
 
         // Export the file
         .then(function(data) {

@@ -8,21 +8,27 @@
 
 module.exports = function(trill) {
 
+  // Module
+  var _ = trill.node._;
+
   // Add services modules to trill
   trill.events.on('post-bootstrap', 1, function(trill) {
 
-    // Let's add file processing plugins
-    trill.process = {
-      file: {
-        'csv': require('./file/csv.js')(trill)
-      }
-    };
+    // Define someplace to store our process plugins
+    trill.process = {};
 
-    // Load our tasks
+    // Let's define our file and lead processing plugins
+    // We assume these live in ./files/PLUGINNAME.js and ./leads respectivel
+    trill.process.filePlugins = ['csv'];
+    trill.process.leadPlugins = ['ping', 'platform'];
+
+    // Load our process task
     trill.tasks.add('process', require('./process')(trill));
 
-    // Let's load lead processing events
-    require('./leads/ping.js')(trill);
+    // Let's load lead processing plugins
+    _.forEach(trill.process.leadPlugins, function(plugin) {
+      require('./leads/' + plugin + '.js')(trill);
+    });
 
   });
 
