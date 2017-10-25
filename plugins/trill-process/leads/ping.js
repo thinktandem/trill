@@ -33,10 +33,22 @@ module.exports = function(trill) {
           rest.get(url, {timeout: 3000})
 
           // The status code is good
-          .on('success', function() {
+          .on('success', function(data, response) {
+
+            // Log and set ping to true
             trill.log.debug('%s is OK!', url);
             lead.ping = true;
+
+            // Cache the results so we can use them down the pipe
+            trill.cache.set(url, {
+              body: data,
+              headers: response.headers,
+              rawHeaders: response.rawHeaders
+            });
+
+            // Resolve
             resolve(lead);
+
           })
 
           // The status code is bad
