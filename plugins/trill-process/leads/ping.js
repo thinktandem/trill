@@ -14,7 +14,10 @@ module.exports = function(trill) {
   var rest = trill.node.rest;
 
   // Check if we can ping the lead website
-  trill.events.on('process-lead', 1, function(lead) {
+  trill.events.on('process-lead', 1, function(data) {
+
+    // Break up the data
+    var lead = data.lead;
 
     // Set the ping to false
     lead.ping = false;

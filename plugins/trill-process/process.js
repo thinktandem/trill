@@ -66,7 +66,7 @@ module.exports = function(trill) {
         lead['Custom field: platform'] = 'Reject';
 
         // Define a lead process event
-        return trill.events.emit('process-lead', lead)
+        return trill.events.emit('process-lead', {lead: lead, options: options})
 
         // Resolve the lead
         .then(function() {

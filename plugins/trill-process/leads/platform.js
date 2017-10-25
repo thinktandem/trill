@@ -14,20 +14,20 @@ module.exports = function(trill) {
 
   // CLI options for this functionality
   var options = {
-    yes: {
-      describe: 'Auto answer yes to prompts',
-      alias: ['y'],
-      default: false,
-      boolean: true,
-      interactive: {
-        type: 'confirm',
-        message: 'Are you sure you want to DESTROY?'
-      }
+    platform: {
+      describe: 'Accept only the platforms specified',
+      choices: ['drupal', 'wordpress', 'mean'],
+      alias: ['p'],
+      array: true
     }
   };
 
   // Check if we can ping the lead website
-  trill.events.on('process-lead', function(lead) {
+  trill.events.on('process-lead', function(data) {
+
+    // Break up the data
+    var lead = data.lead;
+    var options = data.options;
 
     // Attempt to discover the platform of the lead if applicable
     if (_.has(lead, 'Company website') && cache.get(lead['Company website'])) {
@@ -37,9 +37,7 @@ module.exports = function(trill) {
 
       // Log it and get it
       trill.log.info('Attempting to determine the platform of %s', url);
-      var data = cache.get(url);
-
-      console.log(data);
+      var siteInfo = cache.get(url);
 
     }
 
