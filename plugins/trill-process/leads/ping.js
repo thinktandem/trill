@@ -31,8 +31,7 @@ module.exports = function(trill) {
           var url = _.get(lead, 'Company website');
           trill.log.info('About to process %s', url);
 
-          // Make the actual request, lets make sure self-signed certs are OK
-
+          // Make the actual request
           rest.get(url, {timeout: 3000})
 
           // The status code is good
