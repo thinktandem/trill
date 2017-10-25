@@ -16,12 +16,24 @@ module.exports = function(trill) {
   // @todo: we might want to have a set of default options to merge into
   var options = {};
 
-  // Let's go through our plugins
+  // Let's go through our plugins and check to see if they export and options
+  _.forEach(trill.process.leadPlugins, function(plugin) {
+
+    // Load module
+    var mod = require('./leads/' + plugin + '.js')(trill);
+
+    // Check if it has options
+    if (_.has(mod, 'options')) {
+      options = _.merge(options, mod.options);
+    }
+
+  });
 
   // Define our task
   return {
     command: 'process <file>',
     describe: 'Processes the csv file',
+    options: options,
     run: function(options) {
 
       // Verify that file exists

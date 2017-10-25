@@ -12,6 +12,20 @@ module.exports = function(trill) {
   var _ = trill.node._;
   var cache = trill.cache;
 
+  // CLI options for this functionality
+  var options = {
+    yes: {
+      describe: 'Auto answer yes to prompts',
+      alias: ['y'],
+      default: false,
+      boolean: true,
+      interactive: {
+        type: 'confirm',
+        message: 'Are you sure you want to DESTROY?'
+      }
+    }
+  };
+
   // Check if we can ping the lead website
   trill.events.on('process-lead', function(lead) {
 
@@ -30,5 +44,10 @@ module.exports = function(trill) {
     }
 
   });
+
+  // Export options
+  return {
+    options: options
+  };
 
 };
