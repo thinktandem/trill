@@ -76,7 +76,14 @@ module.exports = function(trill) {
         }
 
       }, {concurrency: 10});
+    })
+
+    // Add a catch for retry errors
+    .catch(function() {
+      var url = _.get(lead, 'Company website', 'no url');
+      trill.log.error('Failed to grab %s', url);
     });
+
   });
 
 };
