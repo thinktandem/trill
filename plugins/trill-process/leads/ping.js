@@ -13,11 +13,34 @@ module.exports = function(trill) {
   var Promise = trill.Promise;
   var rest = trill.node.rest;
 
+  // CLI options for this functionality
+  var options = {
+    timeout: {
+      describe: 'Specify the length of the ping timeout in milliseconds',
+      default: 3000,
+      alias: ['t'],
+      number: true
+    },
+    retry: {
+      describe: 'Specify the amount of ping retries',
+      default: 3,
+      alias: ['r'],
+      number: true
+    },
+    concurrency: {
+      describe: 'Specify the ping process concurrency',
+      default: 50,
+      alias: ['c'],
+      number: true
+    }
+  };
+
   // Check if we can ping the lead website
   trill.events.on('process-lead', 1, function(data) {
 
     // Break up the data
     var lead = data.lead;
+    var options = data.options;
 
     // Set the ping to false
     lead.ping = false;
@@ -32,7 +55,7 @@ module.exports = function(trill) {
           trill.log.info('About to process %s', url);
 
           // Make the actual request
-          rest.get(url, {timeout: 3000})
+          rest.get(url, {timeout: options.timeout})
 
           // The status code is good
           .on('success', function(data, response) {
@@ -75,8 +98,8 @@ module.exports = function(trill) {
           resolve(lead);
         }
 
-      }, {concurrency: 10});
-    })
+      }, {concurrency: options.concurrency});
+    }, {max: options.retry})
 
     // Add a catch for retry errors
     .catch(function() {
@@ -85,5 +108,10 @@ module.exports = function(trill) {
     });
 
   });
+
+  // Export options
+  return {
+    options: options
+  };
 
 };
