@@ -45,6 +45,31 @@ module.exports = function(trill) {
     return _.includes(data.body, 'wp-content') ? 'WordPress' : false;
   };
 
+  /*
+   * Check whether its a MEAN stack
+   */
+  var checkMean = function(data) {
+
+    // Scan the body for angular thingz
+    var isAngular = _.some(['ng-class', 'ng-app', 'ng-click'], function(value) {
+      return _.includes(data.body, value);
+    });
+
+    // If there is angular, leave.
+    if (isAngular) {
+      return 'MEAN';
+    }
+
+    // Check headers for Express.
+    var isExpress = _.some(data.headers, function(value) {
+      return (value === 'Express') ? true : false;
+    });
+
+    // If we have Express, we have MEAN.
+    return (isExpress) ? 'MEAN' : false;
+
+  };
+
   // Check if we can ping the lead website
   trill.events.on('process-lead', function(data) {
 
@@ -66,7 +91,8 @@ module.exports = function(trill) {
       // @todo: we want to change this so it stops as soon as we find a positive result
       return Promise.all([
         checkWordPress(siteInfo),
-        checkDrupal(siteInfo)
+        checkDrupal(siteInfo),
+        checkMean(siteInfo)
       ])
 
       // Set the platform if applicable
