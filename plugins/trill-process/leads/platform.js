@@ -77,7 +77,8 @@ module.exports = function(trill) {
         trill.log.verbose('%s is a %s site', url, platform);
 
         // Check to see if platform should be rejected if we have options to filter
-        if (_.has(options, 'p') && !_.includes(options.p, platform)) {
+        var lowerPlatform = _.toLower(platform);
+        if (_.has(options, 'p') && !_.includes(options.p, lowerPlatform)) {
           platform = 'Reject';
         }
 
