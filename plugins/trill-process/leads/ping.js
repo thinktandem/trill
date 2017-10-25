@@ -17,7 +17,7 @@ module.exports = function(trill) {
   var options = {
     timeout: {
       describe: 'Specify the length of the ping timeout in milliseconds',
-      default: 3000,
+      default: 8000,
       alias: ['t'],
       number: true
     },
