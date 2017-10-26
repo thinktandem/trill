@@ -55,7 +55,7 @@ module.exports = function(trill) {
 
     // Scan the body and headers for MEAN things
     var isMean = _.some(combine, function(value) {
-      return _.includes(data.body, value) || (value === 'Express');
+      return _.includes(data.body, value) || ((value === 'Express') && !_.includes(data.body, value));
     });
 
     // Return MEAN or false
