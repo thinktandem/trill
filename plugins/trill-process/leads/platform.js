@@ -50,23 +50,16 @@ module.exports = function(trill) {
    */
   var checkMean = function(data) {
 
-    // Scan the body for angular thingz
-    var isAngular = _.some(['ng-class', 'ng-app', 'ng-click'], function(value) {
-      return _.includes(data.body, value);
+    // Combine our set of things to scan
+    var combine = data.rawHeaders.concat(['ng-class', 'ng-app', 'ng-click']);
+
+    // Scan the body and headers for MEAN things
+    var isMean = _.some(combine, function(value) {
+      return _.includes(data.body, value) || (value === 'Express');
     });
 
-    // If there is angular, leave.
-    if (isAngular) {
-      return 'MEAN';
-    }
-
-    // Check headers for Express.
-    var isExpress = _.some(data.headers, function(value) {
-      return (value === 'Express') ? true : false;
-    });
-
-    // If we have Express, we have MEAN.
-    return (isExpress) ? 'MEAN' : false;
+    // Return MEAN or false
+    return (isMean) ? 'MEAN' : false;
 
   };
 
