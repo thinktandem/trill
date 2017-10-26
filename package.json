@@ -2,7 +2,7 @@
   "name": "trill",
   "description": "Trillin' out all the dizzles!",
   "license": "GPLv3",
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.0-alpha.4",
   "repository": {
     "type": "git",
     "url": "https://github.com/thinktandem/trill"
