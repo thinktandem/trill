@@ -2,10 +2,10 @@ language: node_js
 matrix:
   include:
   - os: linux
-    env: LANDO_OSX_TYPE=osx
+    env: LANDO_OSX_TYPE=linux
     node_js: '8'
   - os: osx
-    env: LANDO_OSX_TYPE=linux
+    env: LANDO_OSX_TYPE=osx
     node_js: '8'
 services:
   - docker
