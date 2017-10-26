@@ -2,8 +2,10 @@ language: node_js
 matrix:
   include:
   - os: linux
+    env: LANDO_OSX_TYPE=osx
     node_js: '8'
   - os: osx
+    env: LANDO_OSX_TYPE=linux
     node_js: '8'
 services:
   - docker
@@ -43,7 +45,7 @@ script:
   - grunt pkg
 
   # Name the release depending on whether it is an official release or not
-  - if [ ! -z "$TRAVIS_TAG" ]; then cp -rf dist/trill-$TRAVIS_TAG release/trill-$TRAVIS_TAG; fi
+  - if [ ! -z "$TRAVIS_TAG" ]; then cp -rf dist/trill-$TRAVIS_TAG release/trill-$LANDO_OSX_TYPE-x64-$TRAVIS_TAG; fi
 
 notifications:
   email:
