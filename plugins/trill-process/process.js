@@ -10,7 +10,6 @@ module.exports = function(trill) {
 
   // Modules
   var _ = trill.node._;
-  var Promise = trill.Promise;
 
   // Default options
   var options = {
@@ -18,14 +17,15 @@ module.exports = function(trill) {
       describe: 'URL(s) to process',
       alias: ['u'],
       array: true
-    }
+    },
+
   };
 
   // Let's go through our plugins and check to see if they export any options
-  _.forEach(trill.process.leadPlugins, function(plugin) {
+  _.forEach(trill.process.plugins, function(plugin) {
 
     // Load module
-    var mod = require('./leads/' + plugin + '.js')(trill);
+    var mod = require('./plugins/' + plugin + '.js')(trill);
 
     // Check if it has options
     if (_.has(mod, 'options')) {
@@ -41,24 +41,29 @@ module.exports = function(trill) {
     options: options,
     run: function(options) {
 
-      // Start a results collector
+      // Collect results
       var results = {};
 
-      // Start with option based URLs if we have them
-      var urls = options.url || [];
+      // Emit a process import event
+      return trill.events.emit('process-import', options)
 
-      // We should have URLs at this point
-      if (_.isEmpty(urls)) {
-        trill.log.error('No URLs detected! You must enter at least one!');
-        trill.log.error('Run "trill process -- --help"');
-        process.exit(5);
-      }
+      // Validate things
+      .then(function() {
 
-      // Log
-      trill.log.info('About to process %j', urls);
+        // We should have URLs at this point
+        if (_.isEmpty(options.url)) {
+          trill.log.error('No URLs detected! You must enter at least one!');
+          trill.log.error('Run "trill process -- --help"');
+          process.exit(5);
+        }
 
-      // Kick off the processing
-      return Promise.resolve(urls)
+        // Log
+        trill.log.info('About to process %j', options.url);
+
+        // Kick off the processing
+        return options.url;
+
+      })
 
       // Process each lead
       .map(function(url) {
@@ -70,6 +75,14 @@ module.exports = function(trill) {
       })
 
       // Export the result
+      .then(function() {
+        return trill.events.emit('process-export', {
+          results: results,
+          options: options
+        });
+      })
+
+      // @todo: probably figure out where the core export as json to stdout should live
       .then(function() {
         console.log(results);
       });
