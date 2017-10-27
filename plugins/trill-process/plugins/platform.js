@@ -114,7 +114,7 @@ module.exports = function(trill) {
       });
 
       // Log
-      trill.log.verbose('%s uses %s', url, results[url].tech);
+      trill.log.verbose('%s uses %j', url, results[url].tech);
 
     });
 

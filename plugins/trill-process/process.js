@@ -18,7 +18,11 @@ module.exports = function(trill) {
       alias: ['u'],
       array: true
     },
-
+    json: {
+      describe: 'Print JSON result to stdout',
+      default: true,
+      boolean: true
+    }
   };
 
   // Let's go through our plugins and check to see if they export any options
@@ -82,9 +86,17 @@ module.exports = function(trill) {
         });
       })
 
-      // @todo: probably figure out where the core export as json to stdout should live
+      // If we have nothing else to do
       .then(function() {
-        console.log(results);
+
+        // Print result to console
+        if (options.json) {
+          console.log(results);
+        }
+
+        // And then return
+        return results;
+
       });
 
     }
