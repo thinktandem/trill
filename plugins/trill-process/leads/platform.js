@@ -17,7 +17,7 @@ module.exports = function(trill) {
   var options = {
     platform: {
       describe: 'Accept only the platforms specified',
-      choices: ['drupal', 'wordpress', 'laravel'],
+      choices: ['drupal', 'wordpress', 'angular', 'express', 'laravel'],
       alias: ['p'],
       array: true
     }
@@ -43,6 +43,35 @@ module.exports = function(trill) {
    */
   var checkWordPress = function(data) {
     return _.includes(data.body, 'wp-content') ? 'WordPress' : false;
+  };
+
+  /*
+   * Check whether its an Angular site
+   */
+  var checkAngular = function(data) {
+
+    // Scan the body for angular thingz
+    var isAngular = _.some(['ng-class', 'ng-app', 'ng-click'], function(value) {
+      return _.includes(data.body, value);
+    });
+
+    // Return MEAN or false
+    return (isAngular) ? 'Angular' : false;
+
+  };
+
+  /*
+   * Check whether its an Express site
+   */
+  var checkExpress = function(data) {
+
+    // Check headers for Express.
+    var isExpress = _.some(data.headers, function(value) {
+      return (value === 'Express') ? true : false;
+    });
+
+    // If we have Express, we have MEAN.
+    return (isExpress) ? 'Express' : false;
   };
 
   /*
@@ -82,6 +111,8 @@ module.exports = function(trill) {
       return Promise.all([
         checkWordPress(siteInfo),
         checkDrupal(siteInfo),
+        checkAngular(siteInfo),
+        checkExpress(siteInfo),
         checkLaravel(siteInfo)
       ])
 
