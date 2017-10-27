@@ -22,7 +22,7 @@ module.exports = function(trill) {
     trill.process.plugins = [
       'growbots',
       'ping',
-      'platform'
+      'tech'
     ];
 
     // Let's load lead processing plugins

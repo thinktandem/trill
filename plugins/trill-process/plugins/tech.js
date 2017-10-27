@@ -29,6 +29,14 @@ module.exports = function(trill) {
   };
 
   /*
+   * Check whether its Joomla
+   * @todo: this method is not 100% foolproof
+   */
+  var checkJoomla = function(data) {
+    return {joomla: _.includes(data.body, 'content="Joomla')};
+  };
+
+  /*
    * Check whether its WordPress
    */
   var checkWordPress = function(data) {
@@ -95,11 +103,12 @@ module.exports = function(trill) {
 
     // Run all the checks
     return Promise.all([
-      checkWordPress(siteInfo),
-      checkDrupal(siteInfo),
       checkAngular(siteInfo),
+      checkDrupal(siteInfo),
       checkExpress(siteInfo),
-      checkLaravel(siteInfo)
+      checkJoomla(siteInfo),
+      checkLaravel(siteInfo),
+      checkWordPress(siteInfo)
     ])
 
     // Set the platform if applicable

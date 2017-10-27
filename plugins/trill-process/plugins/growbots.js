@@ -34,6 +34,7 @@ module.exports = function(trill) {
         'angular',
         'drupal',
         'express',
+        'joomla',
         'laravel',
         'wordpress'
       ],
