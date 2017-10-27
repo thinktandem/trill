@@ -9,7 +9,6 @@
 module.exports = function(trill) {
 
   // Module
-  var _ = trill.node._;
   var Promise = trill.Promise;
   var rest = trill.node.rest;
 
@@ -39,71 +38,66 @@ module.exports = function(trill) {
   trill.events.on('process-lead', 1, function(data) {
 
     // Break up the data
-    var lead = data.lead;
+    var url = data.url;
     var options = data.options;
+    var results = data.results;
 
-    // Set the ping to false
-    lead.ping = false;
+    // Set a bad result to start
+    results[url] = {
+      ping: false
+    };
 
     // Do the vampire
     return Promise.retry(function() {
       return new Promise(function(resolve, reject) {
-        if (_.has(lead, 'Company website')) {
 
-          // Process the URL
-          var url = _.get(lead, 'Company website');
-          trill.log.info('About to process %s', url);
+        // Process the URL
+        trill.log.info('About to process %s', url);
 
-          // Make the actual request
-          rest.get(url, {timeout: options.timeout})
+        // Make the actual request
+        rest.get(url, {timeout: options.timeout})
 
-          // The status code is good
-          .on('success', function(data, response) {
+        // The status code is good
+        .on('success', function(data, response) {
 
-            // Log and set ping to true
-            trill.log.debug('%s is OK!', url);
-            lead.ping = true;
+          // Log and set ping to true
+          trill.log.debug('%s is OK!', url);
 
-            // Cache the results so we can use them down the pipe
-            trill.cache.set(url, {
-              body: data,
-              headers: response.headers,
-              rawHeaders: response.rawHeaders
-            });
+          // Cache the data so we can use them down the pipe
+          trill.cache.set(url, {
+            body: data,
+            headers: response.headers,
+            rawHeaders: response.rawHeaders
+          });
 
-            // Resolve
-            resolve(lead);
+          // Set the ping to true
+          results[url].ping = true;
 
-          })
+          // Resolve
+          resolve();
 
-          // The status code is bad
-          .on('fail', function() {
-            trill.log.warn('%s is NOT OK!', url);
-            reject(lead);
-          })
+        })
 
-          // The timeout is exceeded
-          .on('timeout', function() {
-            trill.log.warn('%s timed out!', url);
-            reject(lead);
-          })
+        // The status code is bad
+        .on('fail', function() {
+          trill.log.warn('%s is NOT OK!', url);
+          reject();
+        })
 
-          // Something else bad happened
-          .on('error', reject);
+        // The timeout is exceeded
+        .on('timeout', function() {
+          trill.log.warn('%s timed out!', url);
+          reject();
+        })
 
-        }
-
-        // Passthrough the lead
-        else {
-          resolve(lead);
-        }
+        // Something else bad happened
+        .on('error', reject);
 
       }, {concurrency: options.concurrency});
     }, {max: options.retry})
 
     // Add a catch for retry errors
     .catch(function() {
-      var url = _.get(lead, 'Company website', 'no url');
       trill.log.error('Failed to grab %s', url);
     });
 

@@ -19,7 +19,7 @@ module.exports = function(trill) {
 
     // Let's define our file and lead processing plugins
     // We assume these live in ./files/PLUGINNAME.js and ./leads respectivel
-    trill.process.filePlugins = ['csv'];
+    //trill.process.filePlugins = ['csv'];
     trill.process.leadPlugins = ['ping', 'platform'];
 
     // Load our process task

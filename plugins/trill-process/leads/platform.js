@@ -13,16 +13,6 @@ module.exports = function(trill) {
   var cache = trill.cache;
   var Promise = trill.Promise;
 
-  // CLI options for this functionality
-  var options = {
-    platform: {
-      describe: 'Accept only the platforms specified',
-      choices: ['drupal', 'wordpress', 'angular', 'express', 'laravel'],
-      alias: ['p'],
-      array: true
-    }
-  };
-
   /*
    * Check whether its Drupal
    */
@@ -33,8 +23,8 @@ module.exports = function(trill) {
       return _.includes(data.body, value);
     });
 
-    // Return either drupal or false
-    return (isDrupal) ? 'Drupal' : false;
+    // Return
+    return {drupal: isDrupal};
 
   };
 
@@ -42,7 +32,7 @@ module.exports = function(trill) {
    * Check whether its WordPress
    */
   var checkWordPress = function(data) {
-    return _.includes(data.body, 'wp-content') ? 'WordPress' : false;
+    return {wordpress: _.includes(data.body, 'wp-content')};
   };
 
   /*
@@ -55,8 +45,8 @@ module.exports = function(trill) {
       return _.includes(data.body, value);
     });
 
-    // Return MEAN or false
-    return (isAngular) ? 'Angular' : false;
+    // Return
+    return {angular: isAngular};
 
   };
 
@@ -70,8 +60,9 @@ module.exports = function(trill) {
       return (value === 'Express') ? true : false;
     });
 
-    // If we have Express, we have MEAN.
-    return (isExpress) ? 'Express' : false;
+    // Return
+    return {express: isExpress};
+
   };
 
   /*
@@ -84,8 +75,8 @@ module.exports = function(trill) {
       return result ||  _.includes(value, 'laravel_session');
     }, false);
 
-    // Return result.
-    return (isLaravel) ? 'Laravel' : false;
+    // Return.
+    return {laravel: isLaravel};
 
   };
 
@@ -93,55 +84,40 @@ module.exports = function(trill) {
   trill.events.on('process-lead', function(data) {
 
     // Break up the data
-    var lead = data.lead;
-    var options = data.options;
+    var url = data.url;
+    var results = data.results;
 
-    // Attempt to discover the platform of the lead if applicable
-    if (_.has(lead, 'Company website') && cache.get(lead['Company website'])) {
+    // Log it and get it
+    trill.log.info('Attempting to determine the platform of %s', url);
 
-      // Get url
-      var url = lead['Company website'];
+    // Get the site info
+    var siteInfo = cache.get(url) || '';
 
-      // Log it and get it
-      trill.log.info('Attempting to determine the platform of %s', url);
-      var siteInfo = cache.get(url);
+    // Run all the checks
+    return Promise.all([
+      checkWordPress(siteInfo),
+      checkDrupal(siteInfo),
+      checkAngular(siteInfo),
+      checkExpress(siteInfo),
+      checkLaravel(siteInfo)
+    ])
 
-      // Run all our checks at the same time and return the first one that works
-      // @todo: we want to change this so it stops as soon as we find a positive result
-      return Promise.all([
-        checkWordPress(siteInfo),
-        checkDrupal(siteInfo),
-        checkAngular(siteInfo),
-        checkExpress(siteInfo),
-        checkLaravel(siteInfo)
-      ])
+    // Set the platform if applicable
+    .then(function(tech) {
 
-      // Set the platform if applicable
-      .then(function(result) {
+      // Start to collect the tech
+      results[url].tech = {};
 
-        // Reduce the result to a single platform
-        var platform = _.compact(result)[0] || 'Reject';
-        trill.log.verbose('%s is a %s site', url, platform);
-
-        // Check to see if platform should be rejected if we have options to filter
-        var lowerPlatform = _.toLower(platform);
-        if (_.has(options, 'p') && !_.includes(options.p, lowerPlatform)) {
-          platform = 'Reject';
-        }
-
-        // Log and set the status
-        trill.log.verbose('Setting %s platform status to %s', url, platform);
-        lead['Custom field: platform'] = platform;
-
+      // Iterate through and set
+      _.forEach(tech, function(t) {
+        results[url].tech = _.merge(results[url].tech, t);
       });
 
-    }
+      // Log
+      trill.log.verbose('%s uses %s', url, results[url].tech);
+
+    });
 
   });
-
-  // Export options
-  return {
-    options: options
-  };
 
 };
