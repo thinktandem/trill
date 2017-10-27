@@ -18,15 +18,27 @@ module.exports = function(trill) {
 
   // Options
   var options = {
+    'growbots-export-file': {
+      alias: ['gef'],
+      describe: 'Growbots CSV file to export',
+      string: true
+    },
     'growbots-import-file': {
       alias: ['gif'],
       describe: 'Growbots CSV file to import',
       string: true
     },
-    'growbots-export-file': {
-      alias: ['gef'],
-      describe: 'Growbots CSV file to export',
-      string: true
+    'growbots-platform': {
+      describe: 'Accept only the platforms specified',
+      choices: [
+        'angular',
+        'drupal',
+        'express',
+        'laravel',
+        'wordpress'
+      ],
+      alias: ['gp'],
+      array: true
     }
   };
 
@@ -115,18 +127,30 @@ module.exports = function(trill) {
         // Match the lead with the result
         var result = results[_.get(lead, 'Company website')];
 
-        // Add in the tech
+        // Map to list of tech
         var tech = _.compact(_.map(result.tech, function(status, thing) {
+          return (status) ? thing : null;
+        }));
+
+        // Check if tech needs to be filtered by the platform option
+        if (_.has(options, 'gp')) {
+          if (_.isEmpty(_.intersection(options.gp, tech))) {
+            tech = [];
+          }
+        }
+
+        // Format the tech to be pretty
+        tech = _.map(tech, function(t) {
 
           // Do an idiot check for wordpress cray
-          if (thing === 'wordpress') {
-            thing = 'WordPress';
+          if (t === 'wordpress') {
+            t = 'WordPress';
           }
 
-          // And return
-          return (status) ? _.capitalize(thing) : null;
+          // Return
+          return _.capitalize(t);
 
-        }));
+        });
 
         // Set the tech
         _.set(lead, 'Custom field: platform', tech.join(' & '));
