@@ -5,7 +5,7 @@ Trill is a libraries layer and CLI tool to process URLs for information that is 
 
 With Trill you can...
 
-*   Process a CSV of URLS
+*   Process URLS for fun data
 *   Determine the platform (eg Drupal, WordPress or Node) of a site
 *   Determine the SEO score of a site
 *   Determine the page speed of a site
@@ -32,9 +32,9 @@ Usage
 Usage: trill <command> [args] [options] [-- global options]
 
 Commands:
-  config          Display the trill configuration
-  process <file>  Processes the csv file
-  version         Display the trill version
+  config   Display the trill configuration
+  process  Processes URLs
+  version  Display the trill version
 
 Global Options:
   --help, -h  Show help
@@ -57,15 +57,19 @@ trill process -- --help
 
 **Usage**
 
-`trill process <file>`
+`trill process --url http://thinktandem.io`
 
 **Options**
 
 ```bash
-  --timeout, -t      Specify the length of the ping timeout in milliseconds [number] [default: 8000]
-  --retry, -r        Specify the amount of ping retries    [number] [default: 3]
-  --concurrency, -c  Specify the ping process concurrency [number] [default: 50]
-  --platform, -p     Accept only the platforms specified [array] [choices: "drupal", "wordpress", "mean"]
+--url, -u                      URL(s) to process                      [array]
+--json                         Print JSON result to stdout            [boolean] [default: true]
+--growbots-export-file, --gef  Growbots CSV file to export            [string]
+--growbots-import-file, --gif  Growbots CSV file to import            [string]
+--growbots-platform, --gp      Accept only the platforms specified    [array] [choices: "angular", "drupal", "express", "laravel", "wordpress"]
+--timeout, -t                  Specify the length of the ping timeout [number] [default: 8000]
+--retry, -r                    Specify the amount of ping retries     [number] [default: 3]
+--concurrency, -c              Specify the ping process concurrency   [number] [default: 50]
 ```
 
 Development

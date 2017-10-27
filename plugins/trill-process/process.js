@@ -10,17 +10,26 @@ module.exports = function(trill) {
 
   // Modules
   var _ = trill.node._;
-  var fs = trill.node.fs;
-  var path = require('path');
 
-  // @todo: we might want to have a set of default options to merge into
-  var options = {};
+  // Default options
+  var options = {
+    url: {
+      describe: 'URL(s) to process',
+      alias: ['u'],
+      array: true
+    },
+    json: {
+      describe: 'Print JSON result to stdout',
+      default: true,
+      boolean: true
+    }
+  };
 
-  // Let's go through our plugins and check to see if they export and options
-  _.forEach(trill.process.leadPlugins, function(plugin) {
+  // Let's go through our plugins and check to see if they export any options
+  _.forEach(trill.process.plugins, function(plugin) {
 
     // Load module
-    var mod = require('./leads/' + plugin + '.js')(trill);
+    var mod = require('./plugins/' + plugin + '.js')(trill);
 
     // Check if it has options
     if (_.has(mod, 'options')) {
@@ -31,69 +40,62 @@ module.exports = function(trill) {
 
   // Define our task
   return {
-    command: 'process <file>',
-    describe: 'Processes the csv file',
+    command: 'process',
+    describe: 'Processes URLs',
     options: options,
     run: function(options) {
 
-      // Verify that file exists
-      var filename = path.join(process.cwd(), options.file);
-      if (!fs.existsSync(filename)) {
-        trill.log.error('%s does not exist!', options.file);
-        process.exit(5);
-      }
+      // Collect results
+      var results = {};
 
-      // Verify we can process the file
-      var fileExtension = _.trim(path.extname(filename), '.');
-      if (!_.includes(trill.process.filePlugins, fileExtension)) {
-        trill.log.error('Cannot process files of type %s', fileExtension);
-        process.exit(666);
-      }
+      // Emit a process import event
+      return trill.events.emit('process-import', options)
 
-      // Log
-      trill.log.info('About to process %s', filename);
+      // Validate things
+      .then(function() {
 
-      // Load the needed file extention handler
-      var handler = require('./file/' + fileExtension + '.js')(trill);
+        // We should have URLs at this point
+        if (_.isEmpty(options.url)) {
+          trill.log.error('No URLs detected! You must enter at least one!');
+          trill.log.error('Run "trill process -- --help"');
+          process.exit(5);
+        }
 
-      // Kick of the promise chain by delegating to the correct plugin
-      return handler.importer(filename)
+        // Log
+        trill.log.info('About to process %j', options.url);
+
+        // Kick off the processing
+        return options.url;
+
+      })
 
       // Process each lead
-      .map(function(lead) {
-
-        // Let's start with some default values
-        lead['Custom field: platform'] = 'Reject';
-
-        // Define a lead process event
-        return trill.events.emit('process-lead', {lead: lead, options: options})
-
-        // Resolve the lead
-        .then(function() {
-          return lead;
+      .map(function(url) {
+        return trill.events.emit('process-lead', {
+          url: url,
+          options: options,
+          results: results
         });
       })
 
-      // Dump the result file
-      .then(function(leads) {
-
-        // log the result
-        trill.log.debug('Result %j', leads);
-
-        // Tranform the result to the correct format
-        var exThing = path.basename(filename, path.extname(filename));
-        var exName = exThing + '.processed.' + fileExtension;
-        var exFile = path.join(process.cwd(), exName);
-        trill.log.info('About to transform the result to %s', fileExtension);
-
-        // Try the exporter
-        return handler.exporter(leads)
-
-        // Export the file
-        .then(function(data) {
-          fs.outputFileSync(exFile, data);
-          trill.log.info('Data written to %s with great success!', exFile);
+      // Export the result
+      .then(function() {
+        return trill.events.emit('process-export', {
+          results: results,
+          options: options
         });
+      })
+
+      // If we have nothing else to do
+      .then(function() {
+
+        // Print result to console
+        if (options.json) {
+          console.log(results);
+        }
+
+        // And then return
+        return results;
 
       });
 
