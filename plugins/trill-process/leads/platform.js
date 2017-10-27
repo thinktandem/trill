@@ -17,7 +17,7 @@ module.exports = function(trill) {
   var options = {
     platform: {
       describe: 'Accept only the platforms specified',
-      choices: ['drupal', 'wordpress', 'mean'],
+      choices: ['drupal', 'wordpress', 'laravel'],
       alias: ['p'],
       array: true
     }
@@ -46,20 +46,17 @@ module.exports = function(trill) {
   };
 
   /*
-   * Check whether its a MEAN stack
+   * Check whether its a Laravel stack
    */
-  var checkMean = function(data) {
+  var checkLaravel = function(data) {
 
-    // Combine our set of things to scan
-    var combine = data.rawHeaders.concat(['ng-class', 'ng-app', 'ng-click']);
+    // Check for Laravel cookie.
+    var isLaravel = _.reduce(data.rawHeaders, function(result, value) {
+      return result ||  _.includes(value, 'laravel_session');
+    }, false);
 
-    // Scan the body and headers for MEAN things
-    var isMean = _.some(combine, function(value) {
-      return _.includes(data.body, value) || ((value === 'Express') && !_.includes(data.body, value));
-    });
-
-    // Return MEAN or false
-    return (isMean) ? 'MEAN' : false;
+    // Return result.
+    return (isLaravel) ? 'Laravel' : false;
 
   };
 
@@ -85,7 +82,7 @@ module.exports = function(trill) {
       return Promise.all([
         checkWordPress(siteInfo),
         checkDrupal(siteInfo),
-        checkMean(siteInfo)
+        checkLaravel(siteInfo)
       ])
 
       // Set the platform if applicable
