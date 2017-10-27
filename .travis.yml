@@ -2,8 +2,10 @@ language: node_js
 matrix:
   include:
   - os: linux
+    env: LANDO_OSX_TYPE=linux
     node_js: '8'
   - os: osx
+    env: LANDO_OSX_TYPE=osx
     node_js: '8'
 services:
   - docker
@@ -43,7 +45,7 @@ script:
   - grunt pkg
 
   # Name the release depending on whether it is an official release or not
-  - if [ ! -z "$TRAVIS_TAG" ]; then cp -rf dist/trill-$TRAVIS_TAG release/trill-$TRAVIS_TAG; fi
+  - if [ ! -z "$TRAVIS_TAG" ]; then cp -rf dist/trill-$TRAVIS_TAG release/trill-$LANDO_OSX_TYPE-x64-$TRAVIS_TAG; fi
 
 notifications:
   email:
@@ -55,7 +57,7 @@ deploy:
   provider: releases
   api_key:
     secure: fsuASnROJwugUg7cFhJZoq/jMKjowxcra8vHVITujaNZIpRb5LJAMBg69DgYVJ4m+3px5afeSH1e2NOc85H7ixjM4CvHh9K68H2d9BR8U6YVbT9j7NGpiYL6MpC1yccQaFH7uxlrzwKoAvlx8Tc4KVAnv1NpyWlO6Cmfm42BF8HMJNgxXNsO9hk4fNHHktaQzV1V9vvdtNlyvAjx/qhBrDFP4rgwpobCX0Vf+Q0Y0ZOJm6XJ7XLt6GKce//DaNwpxdwMOH20YuVgD1Uoy24BRoJaqiZIQkZntVcCd/rzZ9jqkgOuosr4fvwK4XnCGCe88LUr40I4p0j6OvP2xzNJAKa7koVMNDBf6+2Z6NNTlqpymcDCBQ7jpdNrYr0oQb/cm7WQxqvBWeAtLGjCIsGGe2ZWb9/R/t+7+C/2UgkkAp7PTPCKOop483kjqbjU/JeIKsWepC80YVOZ9ToXbTM0kBffx2BjsnvaV8pU2bB7SlnSjiFypYtL2BX8PLE8JDDO95kFoaIBf5KPI1Y3GSxx7pF5nXRk1atN9u7S1LolXRyBDTnDLXeQRbCJRZ2ApAhoUnbseNeQetw6FPUzRgtUuYN5XGAphFHDag/r5KGDdjK45O6yYkP08fKfgw24z1CF82Zyh9fixfTnoNYkosu/yheWr2yoTif8Tnr5Z2MhEu4=
-  file: release/trill-$TRAVIS_TAG
+  file: release/trill-$LANDO_OSX_TYPE-x64-$TRAVIS_TAG
   skip_cleanup: true
   on:
     repo: thinktandem/trill
