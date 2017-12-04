@@ -32,6 +32,7 @@ module.exports = function(trill) {
       describe: 'Accept only the platforms specified',
       choices: [
         'angular',
+        'backdrop',
         'drupal',
         'express',
         'joomla',
