@@ -29,6 +29,21 @@ module.exports = function(trill) {
   };
 
   /*
+   * Check whether its Backdrop
+   */
+  var checkBackdrop = function(data) {
+
+    // Scan the body for Backdrop things
+    var isBackdrop = _.some(['Backdrop CMS'], function(value) {
+      return _.includes(data.headers['x-generator'], value);
+    });
+
+    // Return
+    return {backdrop: isBackdrop};
+
+  };
+
+  /*
    * Check whether its Joomla
    * @todo: this method is not 100% foolproof
    */
@@ -104,6 +119,7 @@ module.exports = function(trill) {
     // Run all the checks
     return Promise.all([
       checkAngular(siteInfo),
+      checkBackdrop(siteInfo),
       checkDrupal(siteInfo),
       checkExpress(siteInfo),
       checkJoomla(siteInfo),
